@@ -1,29 +1,39 @@
 import { Link } from 'react-router-dom';
+import { FiMenu } from 'react-icons/fi';
 
-export default function Navbar() {
+export default function Navbar({ toggleSidebar }) {
   const user = {
     username: 'kerliix_user',
     email: 'user@kerliix.com',
-    avatarUrl: 'https://i.pravatar.cc/150?img=32', // same image as in Profile.jsx
+    avatarUrl: 'https://i.pravatar.cc/150?img=32',
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-br from-blue-900 to-gray-900 border-b border-white/20 text-white px-6 py-4 flex items-center justify-between">
-      
-      {/* Left placeholder to help center the logo */}
-      <div className="w-10 sm:w-32"></div>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-br from-blue-900 to-gray-900 border-b border-white/20 text-white px-4 py-3 flex items-center justify-between">
+      {/* Left side: Menu icon on small screens */}
+      <div className="flex items-center md:hidden">
+        <button
+          onClick={toggleSidebar}
+          className="text-white hover:text-blue-400 focus:outline-none"
+          aria-label="Toggle Sidebar"
+        >
+          <FiMenu size={24} />
+        </button>
+      </div>
 
-      {/* Centered Logo */}
-      <Link to="/dashboard" className="absolute left-1/2 transform -translate-x-1/2">
-        <img
-          src="https://raw.githubusercontent.com/kerliix/.github/main/company/logo.png"
-          alt="Kerliix Logo"
-          className="h-10 w-auto"
-        />
-      </Link>
+      {/* Center: Logo (hidden on small screens) */}
+      <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2">
+        <Link to="/dashboard">
+          <img
+            src="https://raw.githubusercontent.com/kerliix/.github/main/company/logo.png"
+            alt="Kerliix Logo"
+            className="h-10 w-auto"
+          />
+        </Link>
+      </div>
 
-      {/* Profile section on the right */}
-      <div className="flex items-center gap-4">
+      {/* Right side: Username + Avatar */}
+      <div className="flex items-center gap-4 ml-auto">
         <span className="text-sm hidden sm:inline">
           {user?.username || user?.email || 'Guest'}
         </span>
