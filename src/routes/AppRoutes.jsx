@@ -1,6 +1,8 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import ProtectedRoute from '../components/ProtectedRoute';
+
 // Pages
 import Dashboard from '../pages/Dashboard';
 import Privacy from '../pages/Privacy';
@@ -15,12 +17,54 @@ export default function AppRoutes() {
     <>
       <Toaster position="top-center" />
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/devices" element={<Devices />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/privacy"
+          element={
+            <ProtectedRoute>
+              <Privacy />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/devices"
+          element={
+            <ProtectedRoute>
+              <Devices />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/services"
+          element={
+            <ProtectedRoute>
+              <Services />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Catch-all route */}
         <Route path="*" element={<NotFound />} />
@@ -28,3 +72,4 @@ export default function AppRoutes() {
     </>
   );
 }
+
