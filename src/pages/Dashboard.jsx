@@ -1,27 +1,133 @@
-import React from 'react';
+// src/pages/Dashboard.jsx
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/authContext";
+import API from "../api";
 
 export default function Dashboard() {
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Welcome to Your Dashboard</h1>
-      <p className="text-gray-400">
-        This is your main control panel. You can access your personal info, privacy settings, and connected devices from the sidebar.
-      </p>
+  const { user, loading } = useAuth();
+  const [activity, setActivity] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white/10 p-4 rounded shadow">
-          <h2 className="text-lg font-semibold text-blue-300">Account Summary</h2>
-          <p className="text-sm text-gray-300 mt-2">Basic overview of your account activity and data.</p>
-        </div>
-        <div className="bg-white/10 p-4 rounded shadow">
-          <h2 className="text-lg font-semibold text-blue-300">Security Status</h2>
-          <p className="text-sm text-gray-300 mt-2">2FA: Enabled<br />Last login: 2 hours ago</p>
-        </div>
-        <div className="bg-white/10 p-4 rounded shadow">
-          <h2 className="text-lg font-semibold text-blue-300">Devices</h2>
-          <p className="text-sm text-gray-300 mt-2">3 active devices<br />1 new sign-in this week</p>
-        </div>
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const resActivity = await API.get("/account/activity");
+        const resNotifications = await API.get("/account/notifications");
+        setActivity(resActivity.data || []);
+        setNotifications(resNotifications.data || []);
+      } catch (err) {
+        console.error("Failed to fetch dashboard data:", err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-lg text-gray-600">Loading dashboard...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-semibold">Dashboard</h1>
+        <span className="text-sm text-gray-500">
+          Welcome back, {user?.name || "Guest"}
+        </span>
+      </div>
+
+      {/* Account Status */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h2 className="text-lg font-semibold mb-2">Account Status</h2>
+        <p className="text-gray-600">
+          Status:{" "}
+          <span className="font-medium text-green-600">
+            {user?.status || "Active"}
+          </span>
+        </p>
+        <p className="text-gray-600">
+          Last login:{" "}
+          {user?.lastLogin
+            ? new Date(user.lastLogin).toLocaleString()
+            : "Not available"}
+        </p>
+      </div>
+
+      {/* Quick Links */}
+      <div className="grid md:grid-cols-3 gap-4">
+        <Link
+          to="/security"
+          className="bg-gray-50 hover:bg-gray-100 p-4 rounded-2xl shadow-sm border text-center"
+        >
+          <p className="font-medium">Security & Privacy</p>
+        </Link>
+        <Link
+          to="/billing"
+          className="bg-gray-50 hover:bg-gray-100 p-4 rounded-2xl shadow-sm border text-center"
+        >
+          <p className="font-medium">Billing</p>
+        </Link>
+        <Link
+          to="/devices"
+          className="bg-gray-50 hover:bg-gray-100 p-4 rounded-2xl shadow-sm border text-center"
+        >
+          <p className="font-medium">Devices</p>
+        </Link>
+      </div>
+
+      {/* Notifications */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h2 className="text-lg font-semibold mb-4">Notifications</h2>
+        {notifications.length > 0 ? (
+          <ul className="space-y-2">
+            {notifications.map((n, i) => (
+              <li key={i} className="text-gray-700">
+                • {n.message}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-500">No notifications</p>
+        )}
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
+        {activity.length > 0 ? (
+          <ul className="space-y-2">
+            {activity.map((a, i) => (
+              <li key={i} className="flex justify-between text-gray-700">
+                <span>{a.action}</span>
+                <span className="text-sm text-gray-500">
+                  {new Date(a.timestamp).toLocaleString()}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-500">No recent activity</p>
+        )}
+      </div>
+
+      {/* Recommendations */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h2 className="text-lg font-semibold mb-2">Recommendations</h2>
+        <p className="text-gray-600">
+          Secure your account by enabling{" "}
+          <Link to="/security" className="text-blue-600 underline">
+            two-factor authentication
+          </Link>
+          .
+        </p>
       </div>
     </div>
   );
 }
+
+          

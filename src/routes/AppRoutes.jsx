@@ -8,6 +8,7 @@ import Dashboard from '../pages/Dashboard';
 import Privacy from '../pages/Privacy';
 import Devices from '../pages/Devices';
 import Services from '../pages/Services';
+import Billing from '../pages/Billing';
 import Settings from '../pages/Settings';
 import Profile from '../pages/Profile';
 import NotFound from '../pages/NotFound';
@@ -46,6 +47,14 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <Services />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/billing"
+          element={
+            <ProtectedRoute>
+              <Billing />
             </ProtectedRoute>
           }
         />
