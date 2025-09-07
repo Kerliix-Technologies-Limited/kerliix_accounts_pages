@@ -10,10 +10,10 @@ export default function NotFound() {
         Oops! The page you are looking for does not exist.
       </p>
       <button
-        onClick={() => navigate('/dashboard')}
+        onClick={() => navigate('/')}
         className="px-8 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600 transition"
       >
-        Go to Dashboard
+        Back to Dashboard
       </button>
     </div>
   );

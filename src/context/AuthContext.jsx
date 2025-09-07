@@ -7,33 +7,44 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch user on mount — basic user fetch without refresh/login/logout
+  // 🔄 Attempt to fetch current user
   const fetchUser = async () => {
     setLoading(true);
     try {
       const res = await API.get('/auth/me');
       setUser(res.data);
     } catch (error) {
-      // Just clear user if unauthorized or error, no refresh attempts here
-      setUser(null);
-      console.error('Failed to fetch user:', error);
+      if (error.response?.status === 401) {
+        // Access token may be expired → try refreshing
+        try {
+          await API.get('/auth/refresh-token');
+          const res = await API.get('/auth/me');
+          setUser(res.data);
+        } catch (refreshErr) {
+          console.warn('Refresh failed');
+          setUser(null);
+        }
+      } else {
+        console.error('Failed to fetch user:', error);
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  // Run once on mount
   useEffect(() => {
     fetchUser();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, fetchUser }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Hook to use auth context easily
+// Custom hook for easier access
 export function useAuth() {
   return useContext(AuthContext);
 }

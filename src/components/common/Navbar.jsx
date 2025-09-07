@@ -1,21 +1,24 @@
 import { Link } from 'react-router-dom';
 import { FiMenu } from 'react-icons/fi';
-import { useAuth } from '../../context/AuthContext';  // import your auth hook
+import { useAuth } from '../../context/authContext';  // import your auth hook
 
 export default function Navbar({ toggleSidebar }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
-  // Optional: fallback avatar if user has none
+  console.log('[Navbar] user:', user);
+  console.log('[Navbar] loading:', loading);
+
+  // Optional: fallback avatar if user has none or image fails to load
   const defaultAvatar = '/assets/kerliix-icon.png';
 
-  // Optional: function to get user initials if no avatar
+  // Get user initials robustly
   const getInitials = () => {
     if (!user) return '';
-    const firstName = user.firstName || '';
-    const lastName = user.lastName || '';
-    const firstInitial = firstName.charAt(0).toUpperCase();
-    const lastInitial = lastName.charAt(0).toUpperCase();
-    return `${firstInitial}${lastInitial}`;
+    const firstInitial = user.firstName?.charAt(0).toUpperCase() || '';
+    const lastInitial = user.lastName?.charAt(0).toUpperCase() || '';
+    const initials = `${firstInitial}${lastInitial}`.trim();
+    console.log('[Navbar] computed initials:', initials);
+    return initials;
   };
 
   const initials = getInitials();
@@ -44,10 +47,14 @@ export default function Navbar({ toggleSidebar }) {
         </Link>
       </div>
 
-      {/* Right side: Username + Avatar or Initials */}
+      {/* Right side: Name + Avatar or Initials */}
       <div className="flex items-center gap-4 ml-auto">
         <span className="text-sm hidden sm:inline">
-          {user?.username || user?.email || 'Guest'}
+          {loading
+            ? 'Loading...'
+            : user?.firstName && user?.lastName
+            ? `${user.firstName} ${user.lastName}`
+            : user?.username || user?.email || 'Guest'}
         </span>
 
         <Link to="/profile" aria-label="Profile">
@@ -56,6 +63,11 @@ export default function Navbar({ toggleSidebar }) {
               src={user.avatarUrl}
               alt="Profile"
               className="h-10 w-10 rounded-full border-2 border-white/30 hover:border-white transition"
+              onError={(e) => {
+                console.warn('[Navbar] avatar image failed to load, using default');
+                e.currentTarget.onerror = null; // prevent infinite loop
+                e.currentTarget.src = defaultAvatar;
+              }}
             />
           ) : initials ? (
             <div

@@ -1,6 +1,6 @@
 // components/ProtectedRoute.jsx
 import React, { useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { useLocation } from 'react-router-dom';
 
 const AUTH_LOGIN_URL = 'https://auth.kerliix.com/login';
@@ -11,8 +11,7 @@ export default function ProtectedRoute({ children }) {
 
   useEffect(() => {
     if (!loading && !user) {
-      // Redirect to auth.kerliix.com with return URL
-      const currentUrl = window.location.href; // original URL the user wanted
+      const currentUrl = window.location.href;
       const redirectParam = encodeURIComponent(currentUrl);
       window.location.href = `${AUTH_LOGIN_URL}?redirect=${redirectParam}`;
     }

@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000';
+const API_URL = 'https://api.kerliix.com/api';
 
 export async function fetchTokensWithCode(code) {
   const url = `${API_URL}/auth/callback?code=${encodeURIComponent(code)}`;
